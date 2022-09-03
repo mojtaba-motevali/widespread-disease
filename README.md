@@ -2,8 +2,6 @@
 
 This repository includes a software which allows users enter their current signs that are suffering from and know more about possible illness.
 
-This software includes a selective forwarding unit server written in Rust and a react application as web client.
-
 ## Server
 
 In order to read more about server take a look at [here](server).
