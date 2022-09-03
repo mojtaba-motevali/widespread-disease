@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  db:
+    image: postgis/postgis
+    ports:
+      - '$POSTGRES_PORT:$POSTGRES_PORT'
+    environment: 
+      - POSTGRES_PASSWORD=$POSTGRES_PASS
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_DB
+    volumes: 
+      - ./pgData:/var/lib/postgresql/data
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: "always" 
+    depends_on: 
+      - "db" 
+    ports: 
+      - '$API_SERVICE_PORT:$API_SERVICE_PORT'
+    environment: 
+      - API_SERVICE_PORT=3000
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://$POSTGRES_USER:$POSTGRES_PASS@db:$POSTGRES_PORT/$POSTGRES_DB?schema=public
+      - POSTGRES_PORT=$POSTGRES_PORT
+
+ 

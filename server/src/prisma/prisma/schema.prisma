@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model disease {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @unique
+  description        String?
+  spreads            Boolean?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  sideeffect         String[]
+  causedBy           String[]
+  medicrecom         String[]
+  specialistId       Int?
+  specialist         specialist?          @relation(fields: [specialistId], references: [id])
+  signs_disease_join signs_disease_join[]
+}
+
+model signs {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @unique
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  signs_disease_join signs_disease_join[]
+}
+
+model signs_disease_join {
+  id        Int     @default(autoincrement())
+  signId    Int
+  diseaseId Int
+  level     Int     @default(0)
+  disease   disease @relation(fields: [diseaseId], references: [id])
+  signs     signs   @relation(fields: [signId], references: [id])
+
+  @@unique([signId, diseaseId], name: "disease_signs_unique")
+}
+
+model doctor {
+  id           Int         @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  address      String?
+  // This type is currently not supported.
+  lat          Float
+  long         Float
+  phone        String?
+  specialistId Int?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime?   @updatedAt
+  specialist   specialist? @relation(fields: [specialistId], references: [id])
+}
+
+model specialist {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  disease   disease[]
+  doctor    doctor[]
+}
+
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String?
+  auth_srid Int?
+  srtext    String?
+  proj4text String?
+}
